@@ -53,9 +53,9 @@ namespace olc
                 msg.header.size = msg.size();
 
                 //return the target message
-                return msg;
-    
+                return msg;    
             }
+            
         };
     }
 }
