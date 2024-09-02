@@ -43,6 +43,17 @@ namespace olc
                 //cahse current size of vector
                 size_t i = msg.body.size();
 
+                //resize the vector by the size of the data being pushed
+                msg.body.resize(msg.body.size() + sizeof(DataType));
+
+                //copy the data into the newly allocated vector space
+                std::memspy(msg.body.data() + i, &data, sizeof(DataType));
+
+                //calculate the message size again
+                msg.header.size = msg.size();
+
+                //return the target message
+                return msg;
     
             }
         };
