@@ -25,6 +25,26 @@ namespace olc
             {
                 return sizeof(message_header<T>) + body.size();
             }
+
+            //override for std::cout compatability - produces friendly description of the message
+            friend std::ostream& operator << (std::ostream& os, const message<T>& msg)
+            {
+                os << "ID" << int(msg.header.id) << " Size:" << mst.header.size;
+                return os;
+            }
+
+            //Pushes any data into the message buffer
+            template<typename DataType>
+            friend message<T>& operator << (message<T>& msg, const DataType& data)
+            {
+                //check if the type of data being pushed is trivially copyable
+                static_assert(std::is_standard_layout<DataType>::value, "Data is too complex to be pushed into vector");
+
+                //cahse current size of vector
+                size_t i = msg.body.size();
+
+    
+            }
         };
     }
 }
