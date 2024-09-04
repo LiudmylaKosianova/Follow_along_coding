@@ -57,5 +57,25 @@ namespace olc
             }
             
         };
+
+        //forward declare the connection
+        template <typename T>
+        class connection;
+        
+
+        //adding a new object
+        template <typename T>
+        struct owned_message
+        {
+            std::shared_ptr<connection<T>> remote = nullptr;
+            message<T> msg;
+
+            //a friendly string maker
+            friend std::ostream& operator<<(std::ostream& os, const owned_message<T>& msg)
+            {
+                os << msg.msg;
+                return os;
+            }
+        };
     }
 }
