@@ -27,18 +27,52 @@ namespace olc
             //connect to server tiwht hostname/ip and port
             bool Connect(const std::string& host, const uint16_t port)
             {
-                return false;
+                try
+                {
+                    //create connection
+                    m_connection = std::make_unique<connection<T>>();
+
+                    //resolve hostname/io into tangiable physical address
+                    asio::ip::tcp::resolver resolver(m_context);
+                    m_endpoints = resolver.resolve(host, std::to_string(port));
+
+                    //tell the connection object to connect to server
+                    m_connection -> ConnectToSever(m_endpoints);
+
+                    //start Context thread
+                    thrContext = std::thread([this](){m_context.run();});
+
+                }
+                catch(const std::exception& e)
+                {
+                    std::cerr<< "Client exception: " << e.what() << '\n';
+                    return false;
+                }
+                
             }
 
             void Disconnect()
             {
+                if(IsConnected)
+                {
+                    m_connection->Disconnect();
+                }
+
+                m_context.stop();
+                if(thrContext.joinable())
+                    thrContext.join();
+                
+                m_connection.release();
 
             }
 
             //check if the client is actually connected to a server
             bool IsConnected()
             {
-                return false
+                if (m_connection)
+                    return m_connection -> IsConnected();
+                else
+                    return false;
             }
 
             //retrieve queue of messages from server
